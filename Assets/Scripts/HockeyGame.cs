@@ -38,11 +38,14 @@ public class PongGame : MonoBehaviour
     void MovePaddle(GameObject paddle, KeyCode upKey, KeyCode downKey)
     {
         // Move the paddle based on keyboard input
-        if (Input.GetKeyDown(upKey))
+        bool discreteMovements = paddle.GetComponent<Paddle>().discreteMovements;
+        bool upKeyPressed = discreteMovements? Input.GetKeyDown(upKey) : Input.GetKey(upKey);
+        bool downKeyPressed = discreteMovements? Input.GetKeyDown(downKey) : Input.GetKey(downKey);
+        if (upKeyPressed)
         {
             paddle.GetComponent<Paddle>().MoveUp(paddleSpeed);
         }
-        else if (Input.GetKeyDown(downKey))
+        else if (downKeyPressed)
         {
             paddle.GetComponent<Paddle>().MoveDown(paddleSpeed);
         }
