@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4876,17 +4876,13 @@ PrefabInstance:
       propertyPath: _BCIManager
       value: 
       objectReference: {fileID: 6353407144348326863}
-    - target: {fileID: 997449729721641536, guid: 7067da54ff85a2341b5db82d8a1f7736, type: 3}
-      propertyPath: _simulateInput
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1882809538026702742, guid: 7067da54ff85a2341b5db82d8a1f7736, type: 3}
       propertyPath: TrainingObject
       value: 
       objectReference: {fileID: 681717697}
     - target: {fileID: 1882809538026702742, guid: 7067da54ff85a2341b5db82d8a1f7736, type: 3}
       propertyPath: _applicationObjects.Array.size
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1882809538026702742, guid: 7067da54ff85a2341b5db82d8a1f7736, type: 3}
       propertyPath: _applicationObjects.Array.data[0]

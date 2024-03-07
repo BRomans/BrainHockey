@@ -2,14 +2,34 @@ using UnityEngine;
 
 public class PongGame : MonoBehaviour
 {
+    [SerializeField]
+    [Tooltip("The disk object that will be used in the game")]
     public GameObject disk;
+
+    [SerializeField]
+    [Tooltip("The player's paddle object")]
     public GameObject playerPaddle;
+
+    [SerializeField]
+    [Tooltip("The AI's paddle object")]
     public GameObject aiPaddle;
+
+    [SerializeField]
+    [Tooltip("The text object that will display the player's score")]
+    private TMPro.TextMeshProUGUI playerScoreText;
+
+    [SerializeField]
+    [Tooltip("The text object that will display the AI's score")]
+    private TMPro.TextMeshProUGUI aiScoreText;
     public float paddleSpeed = 5f;
 
     public bool discreteMovements = false;
 
     private bool isPlaying = false;
+
+    private int playerScore = 0;
+
+    private int aiScore = 0;
 
     void Update()
     {
@@ -33,6 +53,10 @@ public class PongGame : MonoBehaviour
         MovePaddle(playerPaddle, KeyCode.W, KeyCode.S);
         MovePaddle(playerPaddle, KeyCode.UpArrow, KeyCode.DownArrow);
        
+       if(Input.GetKeyDown(KeyCode.Escape))
+       {
+           ExitGame();
+       }
     }
 
     void MovePaddle(GameObject paddle, KeyCode upKey, KeyCode downKey)
@@ -49,5 +73,22 @@ public class PongGame : MonoBehaviour
         {
             paddle.GetComponent<Paddle>().MoveDown(paddleSpeed);
         }
+    }
+
+    public void UpdatePlayerScore()
+    {
+        playerScore++;
+        playerScoreText.text = playerScore.ToString();
+    }
+
+    public void UpdateAIScore()
+    {
+        aiScore++;
+        aiScoreText.text = aiScore.ToString();
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }
