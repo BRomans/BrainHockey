@@ -11,7 +11,7 @@ BrainHockey is an innovative take on the beloved Pong game, where players use th
 
 ## How to Play
 
-1. **Download**: get the folder "BrainHockey.zip" from the ![release page](https://github.com/BRomans/BrainHockey/releases/tag/v1.0.0) and run the executable.
+1. **Download**: get the folder "BrainHockey.zip" from the [release page](https://github.com/BRomans/BrainHockey/releases/tag/v1.0.0) and run the executable.
 2. **Get Set Up**: Connect your g.tec Unicorn device and ensure it's properly calibrated on your brain.
 3. **Focus and Concentrate**: Use your mental focus on the Neurofeedback Targets to control the paddle's movement.
 4. **Compete or Collaborate**: Play against friends in multiplayer mode or challenge yourself in single-player mode.
