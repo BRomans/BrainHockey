@@ -42,3 +42,5 @@ Let's revolutionize gaming together with BCI technology. Are you ready to unlock
 
 ## Acknowledgments
 This game is free to play and customize for non-commercial use. If you use any parts of this game in your research, please cite the original authors.
+
+Music by <a href="https://pixabay.com/users/grand_project-19033897/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=133094">Grand_Project</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=133094">Pixabay</a>
