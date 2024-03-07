@@ -1,7 +1,12 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Disk : MonoBehaviour
 {
+    public UnityEvent OnPlayerScored;
+
+    public UnityEvent OnAIScored;
+
     public float speed = 5f;
     public Vector3 startPosition;
 
@@ -46,6 +51,14 @@ public class Disk : MonoBehaviour
         }
         if(collision.gameObject.CompareTag("Goal"))
         {
+            if (collision.gameObject.name == "PlayerGoal")
+            {
+                OnAIScored.Invoke();
+            }
+            else
+            {
+                OnPlayerScored.Invoke();
+            }
             Reset();
         }
     }
