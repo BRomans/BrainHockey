@@ -6,6 +6,9 @@ Welcome to BrainHockey, a mind-bending twist on the classic arcade game Pong! Ge
 
 BrainHockey is an innovative take on the beloved Pong game, where players use their brainpower to control the paddle instead of traditional keyboard or mouse inputs. Powered by g.tec Unicorn devices, BrainHockey taps into the potential of BCI technology, allowing players to move their paddle simply by focusing and concentrating on the Neurofeedback Targets.
 
+![In-game screenshot](Assets/Images/in_game.png)
+
+
 ## How to Play
 
 1. **Get Set Up**: Connect your g.tec Unicorn device and ensure it's properly calibrated on your brain.
