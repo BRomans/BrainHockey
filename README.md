@@ -13,6 +13,11 @@ BrainHockey is an innovative take on the beloved Pong game, where players use th
 3. **Compete or Collaborate**: Play against friends in multiplayer mode or challenge yourself in single-player mode.
 4. **Score Points**: Keep your eye on the puck and deflect it past your opponent's paddle to score points.
 
+## Coding Exercise
+This project is part of a tutorial series to learn how to integrate a BCI into a videogame.
+On the branch `coding-exercise` is possible to find a "vanilla" version of the game with only standard keyboard input and no UI.
+(Coming soon!) The implementation of the neurogame step-by-step can be found on YouTube.
+
 ## Features
 
 - **BCI Integration**: Control the paddle using your brain waves with g.tec Unicorn devices.
