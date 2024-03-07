@@ -33,6 +33,10 @@ public class PongGame : MonoBehaviour
         MovePaddle(playerPaddle, KeyCode.W, KeyCode.S);
         MovePaddle(playerPaddle, KeyCode.UpArrow, KeyCode.DownArrow);
        
+       if(Input.GetKeyDown(KeyCode.Escape))
+       {
+           ExitGame();
+       }
     }
 
     void MovePaddle(GameObject paddle, KeyCode upKey, KeyCode downKey)
@@ -49,5 +53,10 @@ public class PongGame : MonoBehaviour
         {
             paddle.GetComponent<Paddle>().MoveDown(paddleSpeed);
         }
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }
