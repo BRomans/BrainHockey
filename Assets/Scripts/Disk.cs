@@ -3,9 +3,9 @@ using UnityEngine.Events;
 
 public class Disk : MonoBehaviour
 {
-    public UnityEvent OnPlayerScored;
+    public UnityEvent OnP2Scored;
 
-    public UnityEvent OnAIScored;
+    public UnityEvent OnP1Scored;
 
     public float speed = 5f;
     public Vector3 startPosition;
@@ -53,11 +53,11 @@ public class Disk : MonoBehaviour
         {
             if (collision.gameObject.name == "PlayerGoal")
             {
-                OnAIScored.Invoke();
+                OnP2Scored.Invoke();
             }
             else
             {
-                OnPlayerScored.Invoke();
+                OnP1Scored.Invoke();
             }
             Reset();
         }

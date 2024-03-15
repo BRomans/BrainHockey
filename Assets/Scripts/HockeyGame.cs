@@ -11,8 +11,8 @@ public class PongGame : MonoBehaviour
     public GameObject playerPaddle;
 
     [SerializeField]
-    [Tooltip("The AI's paddle object")]
-    public GameObject aiPaddle;
+    [Tooltip("The player2's paddle object")]
+    public GameObject player2Paddle;
 
     [SerializeField]
     [Tooltip("The text object that will display the player's score")]
@@ -20,7 +20,7 @@ public class PongGame : MonoBehaviour
 
     [SerializeField]
     [Tooltip("The text object that will display the AI's score")]
-    private TMPro.TextMeshProUGUI aiScoreText;
+    private TMPro.TextMeshProUGUI player2ScoreText;
     public float paddleSpeed = 5f;
 
     public bool discreteMovements = false;
@@ -29,42 +29,34 @@ public class PongGame : MonoBehaviour
 
     private int playerScore = 0;
 
-    private int aiScore = 0;
+    private int player2Score = 0;
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!isPlaying)
-            {
-                disk.GetComponent<Disk>().Launch();
-                isPlaying = true;
-            } else 
-            {
-                isPlaying = false;
-                disk.GetComponent<Disk>().Reset();
-            }
+            StartGame();
         }
-        if(isPlaying)
+        if (isPlaying)
         {
-            disk.GetComponent<Disk>().MoveDisk();;
+            disk.GetComponent<Disk>().MoveDisk(); ;
         }
-    
+
         MovePaddle(playerPaddle, KeyCode.W, KeyCode.S);
-        MovePaddle(playerPaddle, KeyCode.UpArrow, KeyCode.DownArrow);
-       
-       if(Input.GetKeyDown(KeyCode.Escape))
-       {
-           ExitGame();
-       }
+        MovePaddle(player2Paddle, KeyCode.UpArrow, KeyCode.DownArrow);
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitGame();
+        }
     }
 
     void MovePaddle(GameObject paddle, KeyCode upKey, KeyCode downKey)
     {
         // Move the paddle based on keyboard input
         bool discreteMovements = paddle.GetComponent<Paddle>().discreteMovements;
-        bool upKeyPressed = discreteMovements? Input.GetKeyDown(upKey) : Input.GetKey(upKey);
-        bool downKeyPressed = discreteMovements? Input.GetKeyDown(downKey) : Input.GetKey(downKey);
+        bool upKeyPressed = discreteMovements ? Input.GetKeyDown(upKey) : Input.GetKey(upKey);
+        bool downKeyPressed = discreteMovements ? Input.GetKeyDown(downKey) : Input.GetKey(downKey);
         if (upKeyPressed)
         {
             paddle.GetComponent<Paddle>().MoveUp(paddleSpeed);
@@ -81,12 +73,25 @@ public class PongGame : MonoBehaviour
         playerScoreText.text = playerScore.ToString();
     }
 
-    public void UpdateAIScore()
+    public void UpdatePlayer2Score()
     {
-        aiScore++;
-        aiScoreText.text = aiScore.ToString();
+        player2Score++;
+        player2ScoreText.text = player2Score.ToString();
     }
 
+    public void StartGame()
+    {
+        if (!isPlaying)
+        {
+            disk.GetComponent<Disk>().Launch();
+            isPlaying = true;
+        }
+        else
+        {
+            isPlaying = false;
+            disk.GetComponent<Disk>().Reset();
+        }
+    }
     public void ExitGame()
     {
         Application.Quit();

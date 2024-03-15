@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BrainHockey.unity
     guid: 4012d8966a2ca274e9c7a8dc007d3b1f
+  - enabled: 0
+    path: Assets/Scenes/MultiBrainHockey.unity
+    guid: 11564a3070a182b42b7ef5a4cb0db570
   m_configObjects: {}
