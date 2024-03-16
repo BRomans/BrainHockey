@@ -90,10 +90,10 @@ public class BCIController : MonoBehaviour
             {
                 HandleClick(true);
             }
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                OnBtnShowHideClicked();
-            }
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            OnBtnShowHideClicked();
         }
     }
 
@@ -180,7 +180,7 @@ public class BCIController : MonoBehaviour
             _appOffButton.interactable = true;
             _appOnButton.gameObject.SetActive(false);
             _appOffButton.gameObject.SetActive(true);
-            
+
         }
         catch (System.Exception e)
         {
