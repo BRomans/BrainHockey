@@ -25,7 +25,7 @@ public class Disk : MonoBehaviour
         diskVelocity = Vector3.zero;
         transform.position = startPosition;
         if(_taskController != null && _taskController.IsTaskRunning())
-            Invoke("Launch", 1f);
+            Invoke("Launch", 0.5f);
     }
 
     public void Launch()
