@@ -14,7 +14,7 @@ public class Paddle : MonoBehaviour
     public float topBound = 3.8f;
     public float bottomBound = -3.8f;
 
-    private int currentAnchor = 2;
+    public int currentAnchor = 2;
 
     // Update is called once per frame
     void Update()
@@ -45,15 +45,11 @@ public class Paddle : MonoBehaviour
         {
             currentAnchor = 2;
             transform.position = anchorMiddle.position;
-            //Vector3 direction = (anchorMiddle.position - transform.position).normalized;
-            //transform.Translate(direction * discreteSpeed * Time.deltaTime);
         } 
         else if(anchor == 3)
         {
             currentAnchor = 3;
             transform.position = anchorBottom.position;
-            //Vector3 direction = (anchorBottom.position - transform.position).normalized;
-            //transform.Translate(direction * discreteSpeed * Time.deltaTime);
         }
     }
 

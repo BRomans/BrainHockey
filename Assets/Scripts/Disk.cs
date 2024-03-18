@@ -12,15 +12,20 @@ public class Disk : MonoBehaviour
 
     private Vector3 diskVelocity; // Velocity of the ball
 
+    private TaskController _taskController;
+
     void Start()
     {
         startPosition = transform.position;
+        _taskController = GameObject.FindGameObjectWithTag("Task").GetComponent<TaskController>();
     }
 
     public void Reset()
     {
         diskVelocity = Vector3.zero;
         transform.position = startPosition;
+        if(_taskController != null && _taskController.IsTaskRunning())
+            Invoke("Launch", 1f);
     }
 
     public void Launch()
@@ -39,10 +44,40 @@ public class Disk : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if(collision.gameObject.CompareTag("TrialCounter"))
+        {
+            if(_taskController != null && !_taskController.IsTaskRunning())
+                _taskController.StartTaskTimer();
+        }
+        if (collision.gameObject.CompareTag("EndTask"))
+        {
+            if(_taskController != null)
+            {
+                if(collision.name == "EndTask_1")
+                {
+                    _taskController.BallMissed(1);
+                }
+                if(collision.name == "EndTask_2")
+                {
+                    _taskController.BallMissed(2);
+                }
+                if(collision.name == "EndTask_3")
+                {
+                    _taskController.BallMissed(3);
+                }
+            }
+        }
+
         if (collision.gameObject.CompareTag("Paddle"))
         {
             // Reverse the ball's horizontal velocity to simulate bounce
             diskVelocity.x *= -1;
+            if(collision.name == "Player")
+            {
+                Paddle paddle = collision.GetComponent<Paddle>();
+            
+                _taskController.BallHit(paddle.currentAnchor);
+            }
         }
         if(collision.gameObject.CompareTag("Wall"))
         {

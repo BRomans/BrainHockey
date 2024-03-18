@@ -10,12 +10,10 @@ public class CPU : Paddle
     {
         if (ball.position.y > aiTrigger.localPosition.y && ball.position.x > aiTrigger.localPosition.x)
         {
-            Debug.Log("Moving AI up");
             MoveUp(speed);
         }
         else if (ball.position.y < aiTrigger.localPosition.y && ball.position.x > aiTrigger.localPosition.x)
         {
-            Debug.Log("Moving AI down");
             MoveDown(speed);
         }
 
