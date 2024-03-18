@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -36,6 +35,8 @@ public class PongGame : MonoBehaviour
     public bool discreteMovements = false;
 
     private bool isPlaying = false;
+
+    private bool gameOver = false;
 
     private int playerScore = 0;
 
@@ -100,12 +101,22 @@ public class PongGame : MonoBehaviour
         if(player2Score >= BestOf)
         {
             isPlaying = false;
+            gameOver = true;
             OnRoundEnd.Invoke();
         }
     }
 
     public void StartGame()
     {
+        OnRoundStart.Invoke();
+        if(gameOver)
+        {
+            playerScore = 0;
+            playerScoreText.text = playerScore.ToString();
+            player2Score = 0;
+            player2ScoreText.text = player2Score.ToString();
+            gameOver = false;
+        }    
         if (!isPlaying)
         {
             disk.GetComponent<Disk>().Launch();
