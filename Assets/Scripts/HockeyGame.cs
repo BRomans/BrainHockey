@@ -1,7 +1,16 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class PongGame : MonoBehaviour
 {
+    public UnityEvent OnRoundStart;
+    public UnityEvent OnRoundEnd;
+
+    [SerializeField]
+    [Tooltip("Play to the best of X games.")]
+    public int BestOf = 3;
+
     [SerializeField]
     [Tooltip("The disk object that will be used in the game")]
     public GameObject disk;
@@ -27,12 +36,19 @@ public class PongGame : MonoBehaviour
 
     private bool isPlaying = false;
 
+    private bool gameOver = false;
+
     private int playerScore = 0;
 
     private int player2Score = 0;
 
+    void Start()
+    {
+        OnRoundStart.Invoke();
+    }
     void Update()
     {
+       
         if (Input.GetKeyDown(KeyCode.Space))
         {
             StartGame();
@@ -71,16 +87,36 @@ public class PongGame : MonoBehaviour
     {
         playerScore++;
         playerScoreText.text = playerScore.ToString();
+        if(playerScore>= BestOf)
+        {
+            isPlaying = false;
+            OnRoundEnd.Invoke();
+        }
     }
 
     public void UpdatePlayer2Score()
     {
         player2Score++;
         player2ScoreText.text = player2Score.ToString();
+        if(player2Score >= BestOf)
+        {
+            isPlaying = false;
+            gameOver = true;
+            OnRoundEnd.Invoke();
+        }
     }
 
     public void StartGame()
     {
+        OnRoundStart.Invoke();
+        if(gameOver)
+        {
+            playerScore = 0;
+            playerScoreText.text = playerScore.ToString();
+            player2Score = 0;
+            player2ScoreText.text = player2Score.ToString();
+            gameOver = false;
+        }    
         if (!isPlaying)
         {
             disk.GetComponent<Disk>().Launch();
@@ -91,6 +127,11 @@ public class PongGame : MonoBehaviour
             isPlaying = false;
             disk.GetComponent<Disk>().Reset();
         }
+    }
+
+    public void ReloadGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void ExitGame()
     {

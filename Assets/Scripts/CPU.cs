@@ -8,14 +8,12 @@ public class CPU : Paddle
     // Update is called once per frame
     void Update()
     {
-        if (ball.position.y > aiTrigger.localPosition.y && ball.position.x > aiTrigger.localPosition.x)
+        if (ball.position.y > aiTrigger.position.y && ball.position.x > aiTrigger.position.x)
         {
-            Debug.Log("Moving AI up");
             MoveUp(speed);
         }
-        else if (ball.position.y < aiTrigger.localPosition.y && ball.position.x > aiTrigger.localPosition.x)
+        else if (ball.position.y < aiTrigger.position.y && ball.position.x > aiTrigger.position.x)
         {
-            Debug.Log("Moving AI down");
             MoveDown(speed);
         }
 

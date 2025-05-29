@@ -7,6 +7,10 @@ TagManager:
   - Paddle
   - Wall
   - Goal
+  - Task
+  - TrialCounter
+  - EndTask
+  - Target
   layers:
   - Default
   - TransparentFX
