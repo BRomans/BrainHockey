@@ -74,3 +74,6 @@ crashlytics-build.properties
 
 # CSV files
 *.csv
+
+# VS Code
+.vscode/
