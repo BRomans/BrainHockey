@@ -17,7 +17,13 @@ public class Disk : MonoBehaviour
     void Start()
     {
         startPosition = transform.position;
-        _taskController = GameObject.FindGameObjectWithTag("Task").GetComponent<TaskController>();
+        try
+        {
+            _taskController = GameObject.FindGameObjectWithTag("Task").GetComponent<TaskController>();
+        } catch (System.Exception e)
+        {
+            Debug.Log("TaskController not found: " + e.Message);
+        }
     }
 
     public void Reset()
@@ -75,8 +81,10 @@ public class Disk : MonoBehaviour
             if(collision.name == "Player")
             {
                 Paddle paddle = collision.GetComponent<Paddle>();
-            
-                _taskController.BallHit(paddle.currentAnchor);
+                if (_taskController != null && _taskController.IsTaskRunning())
+                {
+                    _taskController.BallHit(paddle.currentAnchor);
+                }
             }
         }
         if(collision.gameObject.CompareTag("Wall"))
