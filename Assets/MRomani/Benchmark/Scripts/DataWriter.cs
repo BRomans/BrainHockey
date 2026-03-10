@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using UnityEngine;
-using Gtec.Benchmark;
 using System.Globalization;
 
 public class DataWriter : MonoBehaviour
