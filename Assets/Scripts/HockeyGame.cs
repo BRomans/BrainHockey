@@ -32,6 +32,10 @@ public class PongGame : MonoBehaviour
     private TMPro.TextMeshProUGUI player2ScoreText;
     public float paddleSpeed = 5f;
 
+    [SerializeField] 
+    [Tooltip("The UI element that will display the game menu")]
+    private GameObject gameMenu;
+
     public bool discreteMovements = false;
 
     private bool isPlaying = false;
@@ -41,7 +45,7 @@ public class PongGame : MonoBehaviour
     private int playerScore = 0;
 
     private int player2Score = 0;
-
+    
     void Start()
     {
         OnRoundStart.Invoke();
@@ -60,6 +64,15 @@ public class PongGame : MonoBehaviour
 
         MovePaddle(playerPaddle, KeyCode.W, KeyCode.S);
         MovePaddle(player2Paddle, KeyCode.UpArrow, KeyCode.DownArrow);
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (gameMenu != null)
+            {
+                gameMenu.gameObject.SetActive(!gameMenu.gameObject.activeSelf);
+            }
+            
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
