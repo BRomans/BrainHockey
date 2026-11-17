@@ -49,6 +49,8 @@ public class BrainHockeyNet : MonoBehaviour
     [Tooltip("RIGHT / RED paddle ('Player2') — played by the client that joins.")]
     public Paddle rightPaddle;
     public PowerUpManager powerUps;
+    public CortexSystem cortex;
+
 
     /// <summary>Fired with 1 (left/blue) or 2 (right/red) whenever the side played on this machine changes.</summary>
     public event Action<int> LocalSideChanged;
@@ -144,6 +146,26 @@ public class BrainHockeyNet : MonoBehaviour
     void OnApplicationQuit()
     {
         Shutdown();
+    }
+    
+    public void StartInferenceAll() { SetInferenceAll(true); }
+    public void StopInferenceAll()  { SetInferenceAll(false); }
+
+    private void SetInferenceAll(bool on)
+    {
+        if (IsClient) { Debug.Log("[BrainHockeyNet] Only the host can start/stop inference"); return; }
+        if (cortex != null) { if (on) cortex.StartInference(); else cortex.StopInference(); }
+        SendBci(on ? BciCommand.StartInference : BciCommand.StopInference);
+    }
+
+    public void SendMenuVisible(bool visible)
+    {
+        SendBci(visible ? BciCommand.ShowMenu : BciCommand.HideMenu);
+    }
+
+    private void SendBci(BciCommand cmd)
+    {
+        if (IsHost && HasPeer) conn.Send(NetProtocol.Build(MsgType.BciCommand, w => w.Write((byte)cmd)));
     }
 
     private void Shutdown()
@@ -359,6 +381,8 @@ public class BrainHockeyNet : MonoBehaviour
         Debug.Log("[BrainHockeyNet] Player joined from " + conn.RemoteAddress);
         if (game != null) game.ResetMatch();
         conn.Send(NetProtocol.Build(MsgType.Welcome, w => w.Write(playerName)));
+        if (cortex != null) SendBci(cortex.IsInferenceRunning ? BciCommand.StartInference : BciCommand.StopInference);
+        if (game != null) SendBci(game.IsMenuVisible ? BciCommand.ShowMenu : BciCommand.HideMenu);
     }
 
     private void HandleClientMessage(byte[] data)
@@ -509,6 +533,14 @@ public class BrainHockeyNet : MonoBehaviour
                 case MsgType.RoundEvent:
                     bool started = r.ReadBoolean();
                     if (game != null) game.ApplyRoundEventFromNetwork(started);
+                    break;
+                
+                case MsgType.BciCommand:
+                    var cmd = (BciCommand)r.ReadByte();
+                    if (cmd == BciCommand.StartInference && cortex != null) cortex.StartInference();
+                    else if (cmd == BciCommand.StopInference && cortex != null) cortex.StopInference();
+                    else if (cmd == BciCommand.ShowMenu && game != null) game.SetMenuVisible(true);
+                    else if (cmd == BciCommand.HideMenu && game != null) game.SetMenuVisible(false);
                     break;
             }
         }

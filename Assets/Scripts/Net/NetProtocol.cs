@@ -15,6 +15,7 @@ namespace BrainHockey.Net
         Snapshot = 10,      // host -> client : full game state
         PowerUpEvent = 11,  // host -> client : a power-up was triggered (type, owner)
         RoundEvent = 12,    // host -> client : round started / ended
+        BciCommand = 13,    // host -> client : inference on/off, menu show/hide
     }
 
     public enum PowerUpType : byte
@@ -24,6 +25,14 @@ namespace BrainHockey.Net
         BigPaddle = 2,
         ShrinkOpponentPaddle = 3,
         MultiBall = 4,
+    }
+    
+    public enum BciCommand : byte
+    {
+        StartInference = 0,
+        StopInference = 1,
+        ShowMenu = 2,
+        HideMenu = 3,
     }
 
     public struct BallState

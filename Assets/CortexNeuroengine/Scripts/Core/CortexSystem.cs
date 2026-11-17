@@ -17,8 +17,7 @@ public class CortexSystem : MonoBehaviour
     public UnityEvent<double[], double> OnQualityReceived;
     public UnityEvent<InferenceResult> OnInferenceReceived;
     public Queue<Action> EventsQueue;
-    private  NeuroDevice Device;
-    
+    public bool IsInferenceRunning { get; private set; }
     public StimControllerBase ActiveController
     {
         get
@@ -33,7 +32,10 @@ public class CortexSystem : MonoBehaviour
         }
     }
 
+    // Private members
+    private  NeuroDevice Device;
 
+    
     public CortexSystem()
     {
         EventsQueue = new Queue<Action>();
@@ -130,14 +132,19 @@ public class CortexSystem : MonoBehaviour
     
     public void SetLocalSide(int side)
     {
+        if (Controllers == null || Controllers.Length == 0) return;
         int index = Mathf.Clamp(side - 1, 0, Controllers.Length - 1);
-        
         if (index == activeControllerIndex && Device != null) return;
+
+        bool wasRunning = IsInferenceRunning;
+        if (wasRunning) StopInference();        // stop the old side's flicker
+
         activeControllerIndex = index;
-        Debug.Log("SetLocalSide: " + index);
         ApplyActiveController();
         var active = ActiveController;
-        if (Device != null && active != null) active.Reinitialize();  // re-scan stims by tag
+        if (Device != null && active != null) active.Reinitialize();
+
+        if (wasRunning) StartInference();       // continue on the new side
     }
     
     private void ApplyActiveController()
@@ -150,7 +157,20 @@ public class CortexSystem : MonoBehaviour
     
     public void StartTraining()  { ActiveController.StartTraining(); }
     public void StopTraining()   { ActiveController.StopTraining(); }
-    public void StartInference() { ActiveController.StartInference(); }
-    public void StopInference()  { ActiveController.StopInference(); }
+    public void StartInference()
+    {
+        if (IsInferenceRunning) return;
+        var c = ActiveController;
+        if (c == null) return;
+        c.StartInference();
+        IsInferenceRunning = true;
+    }
+    public void StopInference()
+    {
+        if (!IsInferenceRunning) return;
+        var c = ActiveController;
+        if (c != null) c.StopInference();
+        IsInferenceRunning = false;
+    }
 
 }

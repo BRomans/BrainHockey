@@ -131,14 +131,23 @@ public class SSVEPController : StimControllerBase
     {
         Stims.Clear();
         List<NeuroStim> sceneStims = new List<NeuroStim>();
+        Debug.Log($"{name}: StimTags = {string.Join(" | ", StimTags.Select(t => "'" + t + "'"))}");
         foreach (string tag in StimTags)
         {
-            sceneStims.AddRange(GameObject.FindGameObjectsWithTag(tag)
+            GameObject[] found = GameObject.FindGameObjectsWithTag(tag);
+            Debug.Log($"{name}: tag '{tag}' -> {found.Length} object(s): {string.Join(", ", found.Select(g => g.name))}");
+
+            foreach (GameObject g in found)
+                if (g.GetComponent<NeuroStim>() == null)
+                    Debug.LogWarning($"{name}: '{g.name}' has tag '{tag}' but no NeuroStim on that object", g);
+
+            sceneStims.AddRange(found
                 .Select(x => x.GetComponent<NeuroStim>())
                 .Where(s => s != null && !sceneStims.Contains(s)));
         }
         
         sceneStims.Sort((x, y) => x.Class.CompareTo(y.Class));
+        Debug.Log($"{name}: " + string.Join(", ", sceneStims.Select((s, i) => $"{i + 1}={s.name}(Class {s.Class})")));
         
         if (nClasses < sceneStims.Count)
         {

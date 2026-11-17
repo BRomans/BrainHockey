@@ -117,19 +117,24 @@ public class PongGame : MonoBehaviour
         if (!Networked && Input.GetKeyDown(player2PowerUpTestKey))
             player2Paddle.GetComponent<Paddle>().SelectTarget(Paddle.PowerUpTargetIndex);
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && gameMenu != null && !IsClient)
         {
-            if (gameMenu != null)
-            {
-                gameMenu.gameObject.SetActive(!gameMenu.gameObject.activeSelf);
-            }
-
+            bool show = !gameMenu.activeSelf;
+            SetMenuVisible(show);
+            if (net != null) net.SendMenuVisible(show);
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ExitGame();
         }
+    }
+    
+    public bool IsMenuVisible { get { return gameMenu != null && gameMenu.activeSelf; } }
+
+    public void SetMenuVisible(bool visible)
+    {
+        if (gameMenu != null) gameMenu.SetActive(visible);
     }
 
     void MovePaddle(GameObject paddle, KeyCode upKey, KeyCode downKey)

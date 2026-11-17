@@ -252,6 +252,7 @@ public class PowerUpManager : MonoBehaviour
         Disk clone = Instantiate(mainDisk, source.transform.position, source.transform.rotation, mainDisk.transform.parent);
         clone.name = mainDisk.name + " (extra " + nextBallId + ")";
         clone.MakeClone(nextBallId++, true, new Vector3(v.x, -v.y, v.z)); // split vertically
+        clone.GetComponent<SpriteRenderer>().material.color = new Color(v.x, v.y, v.z, 1f);
         extraBalls.Add(clone);
     }
 
