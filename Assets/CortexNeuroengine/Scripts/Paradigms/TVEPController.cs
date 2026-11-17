@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class TVEPController : StimControllerBase
@@ -45,12 +43,6 @@ public class TVEPController : StimControllerBase
                 NeurofeedbackLoop(inferenceMode: false);
             }
         }
-        else if (TrainingStarted && TrialCounter == Trials)
-        {
-            TrainingStim.StimOff();
-
-            StopTraining();
-        }
         else if (InferenceMode)
         {
             if (Time.unscaledTimeAsDouble - StartTime > StartDelay)
@@ -64,62 +56,26 @@ public class TVEPController : StimControllerBase
         }
     }
 
-    override public void Init(NeuroDevice device)
+    public override void Init(NeuroDevice device)
     {
         Device = device;
         InitStims();
         InitFlashSequence();
-
-        if (Sequences == null)
-            Sequences = new Dictionary<int, int[]>();
-        if (PreviousClass == null)
-            PreviousClass = new Dictionary<int, int>();
-        ShiftSequence = (int)Math.Floor((float)FlashSequence.Length / nClasses);
-        for (int i = 0; i < nClasses; i++)
-        {
-            int shiftAmount = i * ShiftSequence;
-            int[] temp = new int[FlashSequence.Length];
-            // Calculate split point
-            int splitIndex = FlashSequence.Length - shiftAmount;
-            // Copy the second part to the beginning
-            Array.Copy(FlashSequence, splitIndex, temp, 0, shiftAmount);
-            // Copy the first part to the end
-            Array.Copy(FlashSequence, 0, temp, shiftAmount, FlashSequence.Length - shiftAmount);
-            Sequences.Add(i + 1, temp);
-            PreviousClass.Add(i + 1, 0);
-        }
+        BuildSequences();
+        SetTrainingStim(Stims[classLabels[0]]);
     }
 
-    override public void Reinitialize()
+    public override void Reinitialize()
     {
-        // to be implemented if needed
         Sequences = null;
         PreviousClass = null;
 
         InitFlashSequence();
-
-        if (Sequences == null)
-            Sequences = new Dictionary<int, int[]>();
-        if (PreviousClass == null)
-            PreviousClass = new Dictionary<int, int>();
-        ShiftSequence = (int)Math.Floor((float)FlashSequence.Length / nClasses);
-        for (int i = 0; i < nClasses; i++)
-        {
-            int shiftAmount = i * ShiftSequence;
-            int[] temp = new int[FlashSequence.Length];
-            // Calculate split point
-            int splitIndex = FlashSequence.Length - shiftAmount;
-            // Copy the second part to the beginning
-            Array.Copy(FlashSequence, splitIndex, temp, 0, shiftAmount);
-            // Copy the first part to the end
-            Array.Copy(FlashSequence, 0, temp, shiftAmount, FlashSequence.Length - shiftAmount);
-            Sequences.Add(i + 1, temp);
-            PreviousClass.Add(i + 1, 0);
-        }
+        BuildSequences();
         SetTrainingStim(Stims[classLabels[0]]);
     }
 
-    override public void InitStims()
+    public override void InitStims()
     {
         List<NeuroStim> sceneStims = GameObject.FindGameObjectsWithTag("Stim").Select(x => x.GetComponent<NeuroStim>()).ToList();
         sceneStims.Sort((x, y) => x.Class.CompareTo(y.Class));
@@ -147,23 +103,16 @@ public class TVEPController : StimControllerBase
         Debug.Log("Found " + Stims.Count + " stims in scene. Initialized " + nClasses + " classes.");
     }
 
-    override public void InitFlashSequence()
+    public override void InitFlashSequence()
     {
-        float frameRate = (float)Screen.currentResolution.refreshRateRatio.value;
-        float onDurationSlots = Mathf.FloorToInt((OnDuration / 1000.0f) * frameRate);
-        float offDuration = Mathf.FloorToInt(OnDuration * (nClasses - 1));
-        float offDurationSlots = Mathf.FloorToInt((offDuration / 1000.0f) * frameRate);
-        Debug.Log("OnDurationS: " + onDurationSlots + " OffDurationS: " + offDurationSlots);
-        int totalDurationSlots = Mathf.CeilToInt(onDurationSlots + offDurationSlots);
-        Debug.Log("TotalDurationSlots: " + totalDurationSlots);
-        FlashSequence = new int[totalDurationSlots];
-        for (int c = 0; c < totalDurationSlots; c++)
-        {
-            if (c < onDurationSlots)
-                FlashSequence[c] = 1;
-            else
-                FlashSequence[c] = 0;
-        }
+        float frameRate = Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value);
+        int onSlots = Mathf.Max(1, Mathf.RoundToInt(OnDuration / 1000f * frameRate));
+        Debug.Log("OnDurationS: " + onSlots);
+        int totalSlots = onSlots * nClasses;          
+        Debug.Log("TotalDurationSlots: " + totalSlots);
+        FlashSequence = new int[totalSlots];
+        for (int c = 0; c < onSlots; c++) FlashSequence[c] = 1;
+        ShiftSequence = onSlots;                       
         Debug.Log("Flash sequence:" + string.Join(",", FlashSequence));
     }
 
@@ -171,15 +120,18 @@ public class TVEPController : StimControllerBase
     {
         if (sendStartStopMarkers) Device.SendMarker(StartTrainingMk);
         StartTime = 0;
+        FrameIndex = 0;
         TrialCounter = 0;
         TrainingStarted = true;
         InferenceMode = false;
+        TurnOffStims(); 
     }
 
     public override void StopTraining()
     {
         TrainingStarted = false;
         TrialCounter = 0;
+        TrainingStim?.StimOff(); 
         Invoke("SendStopTrainingMarker", 1.0f);
     }
 
@@ -195,6 +147,9 @@ public class TVEPController : StimControllerBase
         FrameIndex = 0;
         TrainingStarted = false;
         InferenceMode = true;
+        
+        TurnOffStims();
+        foreach (int k in PreviousClass.Keys.ToList()) PreviousClass[k] = 0;
     }
 
     override public void StopInference()
@@ -209,30 +164,36 @@ public class TVEPController : StimControllerBase
     private void NeurofeedbackLoop(bool inferenceMode)
     {
         int index = ComputeIndex();
+        
+        if (index == 0 && FrameIndex > 0)
+        {
+            TrialCounter++;
+            if (!inferenceMode && TrialCounter >= Trials)
+            {
+                StopTraining();          // ends cleanly: no extra marker, no extra flash
+                return;
+            }
+        }
 
         if (index % ShiftSequence == 0)
         {
-            int id = (int)Math.Floor((double)(index / ShiftSequence) + 1);
-            //int id = (index / ShiftSequence) + 1;
+            //int id = (int)Math.Floor((double)(index / ShiftSequence) + 1);
+            int id = (index / ShiftSequence) + 1;
             Device.SendMarker(id);
-            if (id == nClasses)
-            {
-                TrialCounter++;
-            }
 
         }
         double ts = Time.unscaledTimeAsDouble;
-        int mClass = TrainingStim.Class;
         if (!inferenceMode)
         {
+            int mClass = TrainingStim.Class;
             ToggleTrainingStim(index, mClass);
+            //PreviousClass[mClass] = Sequences[mClass][index];
         }
         else
         {
             ToggleApplicationStim(index);
         }
-        PreviousClass[mClass] = Sequences[mClass][index];
-
+        
         PreviousTs = ts;
         FrameIndex++;
     }
@@ -268,7 +229,7 @@ public class TVEPController : StimControllerBase
         }
     }
 
-    override public Dictionary<int, NeuroStim> GetStims()
+    public override Dictionary<int, NeuroStim> GetStims()
     {
         return Stims;
     }
@@ -281,7 +242,7 @@ public class TVEPController : StimControllerBase
         }
     }
 
-    override public void SetStims(List<NeuroStim> stims)
+    public override void SetStims(List<NeuroStim> stims)
     {
         Stims.Clear();
         nClasses = stims.Count;
@@ -303,6 +264,21 @@ public class TVEPController : StimControllerBase
         }
     }
 
+    private void BuildSequences()
+    {
+        Sequences = new Dictionary<int, int[]>();
+        PreviousClass = new Dictionary<int, int>();
+        for (int i = 0; i < nClasses; i++)
+        {
+            int shift = i * ShiftSequence;
+            var seq = new int[FlashSequence.Length];
+            for (int k = 0; k < seq.Length; k++)
+                seq[(k + shift) % seq.Length] = FlashSequence[k];   // same rotation, no Array.Copy maths
+            Sequences[i + 1] = seq;
+            PreviousClass[i + 1] = 0;
+        }
+    }
+    
     private void SetTrainingStim(NeuroStim stim)
     {
         TrainingStim = stim;
