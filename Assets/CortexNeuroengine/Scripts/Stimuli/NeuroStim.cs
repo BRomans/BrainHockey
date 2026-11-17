@@ -31,7 +31,7 @@ public abstract class NeuroStim : MonoBehaviour
     public void ClassFocused(int predictedClass, Queue<System.Action> EventsQueue)
     {
         currentlyFocused = true;
-        Debug.Log("Class " + predictedClass + " focused, event enqueued");
+        //Debug.Log("Class " + predictedClass + " focused, event enqueued");
         EventsQueue.Enqueue(() => {OnFocused.Invoke();});
     }
 

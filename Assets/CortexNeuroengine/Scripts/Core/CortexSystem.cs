@@ -9,6 +9,7 @@ public class CortexSystem : MonoBehaviour
     
 
     public NeuroDevice.Device DeviceType = NeuroDevice.Device.LSL;
+    public float confidenceThreshold = 0.95f;
     public TMPro.TextMeshProUGUI predictedClassText;
     public StimControllerBase[] Controllers;
     public UnityEvent<double[], double> OnDataReceived;
@@ -28,6 +29,9 @@ public class CortexSystem : MonoBehaviour
         {
             case NeuroDevice.Device.LSL:
                 Device = new LSLDevice();
+                break;
+            case NeuroDevice.Device.USB:
+                Device = new TinyBCILinkDevice();
                 break;
             default:
                 Debug.LogError("No device selected");
@@ -67,12 +71,13 @@ public class CortexSystem : MonoBehaviour
 
     public void ReceiveInference(InferenceResult result)
     {
-        //Debug.Log("Received inference: " + string.Join(", ", data));
+        Debug.Log("Received inference: " + string.Join(", ", result.selectedClass));
         int selectedClass = result.selectedClass;
+        float confidence = result.confidence;
         double timestamp = result.timestamp;
-        if (predictedClassText != null)
-            predictedClassText.text = selectedClass.ToString();
-        int classId = selectedClass;
+        if (predictedClassText)
+            predictedClassText.text = selectedClass.ToString();        
+        int classId = selectedClass + 1;
         EventsQueue.Enqueue(() => OnInferenceReceived.Invoke(result));
         try
         {
@@ -80,7 +85,7 @@ public class CortexSystem : MonoBehaviour
             foreach (KeyValuePair<int, NeuroStim> kvp in stimController.GetStims())
             {
                 NeuroStim target = kvp.Value;
-                if (kvp.Key == classId)
+                if (kvp.Key == classId && confidence >= confidenceThreshold)
                     target.ClassFocused(classId, EventsQueue);
                 else
                     target.ClassReleased(EventsQueue);

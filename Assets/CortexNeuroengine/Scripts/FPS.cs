@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class FPS : MonoBehaviour
 {
@@ -19,9 +18,10 @@ public class FPS : MonoBehaviour
             GUI.TextArea(Background, fullText);
 
             int fps = Mathf.FloorToInt(1.0f / Time.unscaledDeltaTime);
-            fpsText = fps.ToString();
+            fpsText = " " + fps;
             if (fps < 30)
             {
+                // Change color to red
                 GUI.color = Color.red;
             }
             else if (fps < 58)
