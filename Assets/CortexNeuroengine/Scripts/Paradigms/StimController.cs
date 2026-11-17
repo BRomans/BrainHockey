@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public abstract class StimControllerBase : MonoBehaviour
     public int nClasses = 4;
     [SerializeField]
     [Tooltip("Number of trials for training phase")]
-    public int trials = 60 ;
+    public int Trials = 60;
     [SerializeField]
     [Tooltip("Delay before starting training or application in seconds")]
     protected float StartDelay = 1f;
@@ -29,9 +28,7 @@ public abstract class StimControllerBase : MonoBehaviour
 
     protected NeuroDevice Device;
     protected double StartTime = 0;
-    
-    public int Trials {get {return trials;} set {trials = value;} }
-    
+
     public abstract void Init(NeuroDevice device);
     public abstract void Reinitialize();
     public abstract void InitStims();
@@ -42,16 +39,4 @@ public abstract class StimControllerBase : MonoBehaviour
     public abstract void StopInference();
     public abstract Dictionary<int, NeuroStim> GetStims();
     public abstract void SetStims(List<NeuroStim> stims);
-
-    public void SetTrials(string nTrials)
-    {
-        try
-        {
-            this.Trials = int.Parse(nTrials);
-        }
-        catch
-        {
-            Debug.LogWarning("Trial number is must be an integer value");
-        }
-    }
 }
