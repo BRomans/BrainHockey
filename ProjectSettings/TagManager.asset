@@ -11,6 +11,9 @@ TagManager:
   - TrialCounter
   - EndTask
   - Target
+  - Stim
+  - Stim2
+  - PowerUp
   layers:
   - Default
   - TransparentFX

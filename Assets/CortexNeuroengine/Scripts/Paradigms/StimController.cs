@@ -13,6 +13,9 @@ public abstract class StimControllerBase : MonoBehaviour
     [SerializeField]
     [Tooltip("Stimulus used during training phase")]
     public NeuroStim TrainingStim;
+
+    [SerializeField] [Tooltip("Name of the TAG to automatically pick stims")]
+    public List<string> StimTags = new List<string>() { "Stim" };
     [SerializeField]
     [Tooltip("Number of classes in the paradigm")]
     public int nClasses = 4;

@@ -130,11 +130,14 @@ public class SSVEPController : StimControllerBase
     override public void InitStims()
     {
         Stims.Clear();
-        List<NeuroStim> sceneStims = GameObject.FindGameObjectsWithTag("Stim")
-            .Select(x => x.GetComponent<NeuroStim>())
-            .Where(s => s != null)
-            .OrderBy(s => s.Class)
-            .ToList();
+        List<NeuroStim> sceneStims = new List<NeuroStim>();
+        foreach (string tag in StimTags)
+        {
+            sceneStims.AddRange(GameObject.FindGameObjectsWithTag(tag)
+                .Select(x => x.GetComponent<NeuroStim>())
+                .Where(s => s != null && !sceneStims.Contains(s)));
+        }
+        
         sceneStims.Sort((x, y) => x.Class.CompareTo(y.Class));
         
         if (nClasses < sceneStims.Count)

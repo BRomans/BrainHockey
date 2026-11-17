@@ -17,10 +17,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MultiBrainHockey.unity
     guid: 11564a3070a182b42b7ef5a4cb0db570
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SSVEPBH.unity
     guid: 8cb98efc4c0924af19a88554827daa38
   - enabled: 0
     path: Assets/Scenes/OpenBrainHockey.unity
     guid: 01d82fe4c35af46f9a5791a0516f0429
+  - enabled: 1
+    path: Assets/Scenes/SSVEPBH_MULTI.unity
+    guid: 03766d33e9501407d975f85187dce410
   m_configObjects: {}

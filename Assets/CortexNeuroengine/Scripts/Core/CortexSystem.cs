@@ -12,11 +12,27 @@ public class CortexSystem : MonoBehaviour
     public float confidenceThreshold = 0.95f;
     public TMPro.TextMeshProUGUI predictedClassText;
     public StimControllerBase[] Controllers;
+    public int activeControllerIndex = 0; 
     public UnityEvent<double[], double> OnDataReceived;
     public UnityEvent<double[], double> OnQualityReceived;
     public UnityEvent<InferenceResult> OnInferenceReceived;
     public Queue<Action> EventsQueue;
     private  NeuroDevice Device;
+    
+    public StimControllerBase ActiveController
+    {
+        get
+        {
+            if (Controllers == null || Controllers.Length == 0)
+            {
+                Debug.LogError("CortexSystem '" + name + "' has no Controllers assigned " +
+                               "(is the button pointing at the scene instance?)", this);
+                return null;
+            }
+            return Controllers[Mathf.Clamp(activeControllerIndex, 0, Controllers.Length - 1)];
+        }
+    }
+
 
     public CortexSystem()
     {
@@ -44,6 +60,7 @@ public class CortexSystem : MonoBehaviour
         {
             controller.Init(Device);
         }
+        ApplyActiveController();
     }
 
     public void Update()
@@ -81,7 +98,7 @@ public class CortexSystem : MonoBehaviour
         EventsQueue.Enqueue(() => OnInferenceReceived.Invoke(result));
         try
         {
-            StimControllerBase stimController = Controllers[0];
+            StimControllerBase stimController = ActiveController;
             foreach (KeyValuePair<int, NeuroStim> kvp in stimController.GetStims())
             {
                 NeuroStim target = kvp.Value;
@@ -110,5 +127,30 @@ public class CortexSystem : MonoBehaviour
     {
         Device.SendMarker(marker);
     }
+    
+    public void SetLocalSide(int side)
+    {
+        int index = Mathf.Clamp(side - 1, 0, Controllers.Length - 1);
+        
+        if (index == activeControllerIndex && Device != null) return;
+        activeControllerIndex = index;
+        Debug.Log("SetLocalSide: " + index);
+        ApplyActiveController();
+        var active = ActiveController;
+        if (Device != null && active != null) active.Reinitialize();  // re-scan stims by tag
+    }
+    
+    private void ApplyActiveController()
+    {
+        // disabled controllers don't Update -> no flicker, no markers from the other side
+        if (Controllers == null) return;
+        for (int i = 0; i < Controllers.Length; i++)
+            Controllers[i].enabled = i == activeControllerIndex;
+    }
+    
+    public void StartTraining()  { ActiveController.StartTraining(); }
+    public void StopTraining()   { ActiveController.StopTraining(); }
+    public void StartInference() { ActiveController.StartInference(); }
+    public void StopInference()  { ActiveController.StopInference(); }
 
 }
